@@ -1,46 +1,56 @@
-let dragindex = 0;
-let dropindex = 0;
-let clone = "";
+document.addEventListener("DOMContentLoaded",()=>{
+let draggables = document.querySelectorAll(".image")
+// console.log(draggables)
 
-const images = document.querySelectorAll(".image");
+let draggedElement = null // which card/div you have started dragging
+draggables.forEach(draggable =>{
 
-function drag(e) {
-  e.dataTransfer.setData("text", e.target.id);
-}
+    // dragStart, dragEnd
 
-function allowDrop(e) {
-  e.preventDefault();
-}
+    draggable.addEventListener("dragstart",(e)=>{
+         draggedElement = e.target
+        //  e.dataTransfer.setData("text", e.target.id)
+         draggedElement.style.opacity = 0.5
+    })
 
-function drop(e) {
-  clone = e.target.cloneNode(true);
-  let data = e.dataTransfer.getData("text");
-  let nodelist = document.getElementById("parent").childNodes;
-  console.log(data, e.target.id);
-  for (let i = 0; i < nodelist.length; i++) {
-    if (nodelist[i].id == data) {
-      dragindex = i;
-    }
-  }
+    draggable.addEventListener("dragend",(e)=>{
+        e.target.style.opacity = 1
+   })
 
-  dragdrop(clone);
+   // dragover, dragenter, drop
+   let dragEvents = ["dragover", "dragenter", "drop"]
+//    draggable.addEventListener("dragover", (e)=>{
+//         e.preventDefault()
+//    })
 
-  document
-    .getElementById("parent")
-    .replaceChild(document.getElementById(data), e.target);
+    dragEvents.forEach(drag =>{
+        draggable.addEventListener(drag, (e)=>{
+                e.preventDefault()
 
-  document
-    .getElementById("parent")
-    .insertBefore(
-      clone,
-      document.getElementById("parent").childNodes[dragindex]
-    );
-}
+            if(drag == "drop"){
+                 const targetElement = e.target // where you want to drop it
+                console.log("Helllloo")
+                if(targetElement != draggedElement){
+                    // swap the background image
+                    const draggedBackground = draggedElement.id
+                    draggedElement.id = targetElement.id
+                    targetElement.id = draggedBackground
 
-const dragdrop = (image) => {
-  image.ondragstart = drag;
-  image.ondragover = allowDrop;
-  image.ondrop = drop;
-};
+                    // swap: 
 
-images.forEach(dragdrop);
+                    const draggedText = draggedElement.innerText
+                    draggedElement.innerText = targetElement.innerText
+                    targetElement.innerText = draggedText
+
+
+                }
+
+
+
+            }
+        })
+    })
+
+
+})
+})
